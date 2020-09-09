@@ -1,0 +1,23 @@
+div.editormd-container{
+    padding-top: 0;
+}
+div.related-widget-wrapper{
+    display: block;
+}
+select#id_article_type{
+    height: 2em;
+    font-size: 16px;
+}
+div.form-group{
+    /*margin-left: 30px;*/
+}
+input#title{
+    width: 40em!important;
+}
+input#categoryName{
+    width: 40em!important;
+}
+
+input.article-summary{
+    width: 60em!important;
+}

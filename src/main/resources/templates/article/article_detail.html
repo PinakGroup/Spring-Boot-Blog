@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8"/>
+    <title>Article</title>
+    <link rel="stylesheet" href="/static/editor/css/editormd.preview.min.css"/>
+    <link rel="stylesheet" href="/static/editor/css/editormd.css"/>
+    <link rel="stylesheet" href="/static/editor/css/style.css">
+    <link rel="stylesheet" href="/static/css/article.css">
+</head>
+<head th:insert="~{base :: header}">
+</head>
+<body>
+<nav th:insert="~{base :: navbar}"></nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div id="articleInfo">
+                <h2 class="article-title" th:text="${article.title}"></h2>
+                <input type="hidden" th:value="${article.articleId}" id="article-id">
+
+                <ul id="article-info">
+                    <li>
+                        <span class="glyphicon glyphicon-user">作者</span>
+                        <span id="author" th:text="${article.author}"></span>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-pencil">创作</span>
+                        <span th:text="${#dates.format(article.createdTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-refresh">更新</span>
+                        <span th:text="${#dates.format(article.lastUpdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </li>
+                    <li>
+                        <span class="glyphicon glyphicon-eye-open">阅读</span>
+                        <span id="read-num" th:text="${article.readNum}"></span>
+                    </li>
+                    <li th:if="${article.comments != null}">
+                        <span class="glyphicon glyphicon-star">评论</span>
+                        <span id="comment-num" th:text="${article.comments.size() }"></span>
+                    </li>
+                    <li>
+                        <div sec:authorize="isAuthenticated()" class="like" onclick="updateLikeNum(this, true);">
+                    <span id="auth-like-num" class="glyphicon glyphicon-heart" th:classappend="${like.likeStatus}"
+                          th:text="${article.likeNum}"></span>
+                        </div>
+                        <div sec:authorize="isAnonymous()" class="like" onclick="updateLikeNum(this, false);">
+                            <span id="anonymous-like-num" class="glyphicon glyphicon-heart"
+                                  th:text="${article.likeNum}"></span>
+                        </div>
+                    </li>
+                    <li>
+                        <!--编辑链接-->
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${loginUser != null && article.author == loginUser.name}"
+                           th:href="@{/article/edit/{articleId}(articleId=${article.articleId})}">
+                            <span class="glyphicon glyphicon-edit">编辑</span>
+                        </a>
+                        <!--删除链接-->
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${loginUser != null && article.author == loginUser.name}"
+                           th:href="@{/article/delete/{articleId}(articleId=${article.articleId})}">
+                            <span class="glyphicon glyphicon-trash">删除</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="editormd-preview-container" id="article-content">
+                <textArea id="markdown-text" th:text="${article.content}" style="display: none" title=""></textArea>
+            </div>
+
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <p class="comment-tips">智慧如你，来发表一番评论吧！</p>
+            <div class="sign-container" sec:authorize="isAnonymous()">
+                <button type="button" class="btn-sign" onclick="login();">登录</button>
+                <span>后发表评论</span>
+            </div>
+
+            <div class="comment-area" sec:authorize="isAuthenticated()">
+                <button id="comment" type="button" class="btn btn-success">发表我的评论
+                </button>
+                <form th:if="${loginUser != null}" id="comment-form"
+                      style="display: none">
+                    <div id="comment-editormd" class="editormd-container">
+                        <!-- 存放源文件用于编辑 !-->
+                        <label for="commentContent"></label>
+                        <textarea style="display:none;" id="commentContent" name="commentContent"></textarea>
+                    </div>
+                    <input type="hidden" id="articleId" name="articleId" th:value="${article.articleId}">
+                    <input type="hidden" name="username" th:value="${loginUser.name}">
+                    <div class="form-group">
+                        <button id="submit-comment" type="submit" class="btn btn-success">提交评论</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="alert alert-success" id="comment-tips" style="display: none">
+                <span class="comment-message"></span>
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger" id="error-tips" style="display: none">
+                <span class="error-message"></span>
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="comment-area" id="history-comments"
+                 th:if="${article.comments != null && article.comments.size() > 0 && article.comments.get(0).commentId != null}">
+                <div class="top-title">
+                    <span th:text="${article.comments.size() + '条评论'}"></span>
+                </div>
+                <div class="comment-detail" th:id="${ 'comment-' + comment.commentId}"
+                     th:each="comment: ${article.comments}" th:if="${comment.commentId != null}">
+                    <div class="author">
+                        <a href="#" class="comment-user" th:text="${comment.username}"></a>
+                        <span class="comment-time"
+                              th:text="${#dates.format(comment.commentTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <div class="edit-or-delete" sec:authorize="isAuthenticated()"
+                             th:if="${loginUser != null && loginUser.name.equals(comment.username)}">
+                            <button type="button" class="edit-comment">编辑</button>
+                            <button type="button" class="delete-comment" onclick="deleteComment(this);">删除</button>
+                        </div>
+                    </div>
+                    <p class="comment-content" th:text="${comment.commentContent}"></p>
+                    <a class="good" href="#">赞</a>
+                    <a class="reply-comment" href="#">回复</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--登录模态框 -->
+<div class="modal fade" id="login-Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">登录</h4>
+            </div>
+            <div class="modal-body">
+                <form id="login-form" method="post">
+                    <div class="form-group">
+                        <label for="username" class="col-form-label">用户名</label>
+                        <input type="text" name="username" id="username" class="form-control" maxlength="50" required>
+                    </div>
+
+                    <div class="form-group ">
+                        <label for="password" class="col-form-label">密码</label>
+                        <input type="password" name="password" id="password" class="form-control" maxlength="50"
+                               required>
+                    </div>
+
+                    <div class="alert alert-danger" id="tips" style="display: none">
+                        <!--  用户名和密码不匹配！-->
+                        <span id="message"></span>
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="form-group pull-left">
+                        <label for="remember-me"></label>
+                        <input type="checkbox" id="remember-me" name="remember-me">下次自动登录
+                    </div>
+                    <div class="form-group pull-right">
+                        <a href="/auth/forgetPassword">忘记密码？</a>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success form-control">登录</button>
+                    </div>
+
+                    <div>
+                        <a id="github-login" th:href="@{/login/github}">Github账号登录</a>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/editor/lib/marked.min.js"></script>
+<script src="/static/editor/lib/prettify.min.js"></script>
+<script src="/static/editor/editormd.min.js"></script>
+<script src="/static/editor/lib/raphael.min.js"></script>
+<script src="/static/editor/lib/underscore.min.js"></script>
+<script src="/static/editor/lib/sequence-diagram.min.js"></script>
+<script src="/static/editor/lib/flowchart.min.js"></script>
+<script src="/static/editor/lib/jquery.flowchart.min.js"></script>
+
+<script type="text/javascript" src="/static/js/article_detail.js"></script>
+</body>
+</html>

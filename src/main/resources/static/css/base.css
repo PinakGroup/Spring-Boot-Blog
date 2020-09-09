@@ -1,0 +1,55 @@
+.navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 20px;
+}
+#home, #articles,#more, #username, #menu{
+    margin-top: 0.7em;
+    font-size: 18px;
+}
+#search-q, #search-button{
+    margin-top: 0.7em;
+    border: 1px solid #eee;
+    border-radius: 40px;
+
+}
+input#q{
+    border: 1px solid #eee;
+    border-radius: 40px;
+}
+#site-name {
+    margin-top: 0.5em;
+    font-size: 22px;
+}
+span.glyphicon{
+    margin-right: 10px;
+}
+
+
+span.glyphicon-eye-open{
+    color: #00d95a;
+}
+
+span.glyphicon-user{
+    color: #0a001f;
+}
+
+div.like {
+    margin-top: 0.5em;
+    color: #337ab7;
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.5em 0.3em;
+}
+
+span.glyphicon-heart.active{
+    color: #c9302c;
+}
+
+div.page-nav >nav >ul > li > a > span.active{
+    color: #0a001f;
+}
+
+.navbar-btn{
+    border-radius: 40px;
+}

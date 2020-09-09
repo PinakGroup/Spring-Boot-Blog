@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="~{base :: header}">
+</head>
+<head>
+    <title>admin</title>
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container">
+    <div class="panel-default col-md-4 col-md-offset-4">
+        <div class="page-header">
+            <h2>管理员门户！</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="/druid/stat">druid 监控</a></li>
+                <li class="list-group-item"><a th:href="@{/admin/listUsers/{pageNum}(pageNum=1)}">用户列表</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:insert="~{base :: header}">
+</head>
+<head>
+    <title>admin</title>
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container">
+    <div class="panel-default col-md-6 col-md-offset-3">
+        <div class="page-header">
+            <h3 style="text-align: center">用户列表</h3>
+        </div>
+        <div class="panel-body">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <td>Id</td>
+                        <td>Username</td>
+                        <td>Email</td>
+                        <td>CreatedTime</td>
+                    </tr>
+                    <tr th:each="user:${page.getRecords()}">
+                        <td th:text="${user.getId()}"></td>
+                        <td th:text="${user.getUsername()}"></td>
+                        <td th:text="${user.getEmail()}"></td>
+                        <td th:text="${#dates.format(user.getCreatedTime(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    </tr>
+                </table>
+            <div class="pager" th:with="currentPageNum = ${page.getCurrent()}">
+                <p>
+                    <span th:if="${page.hasPrevious()}"><a th:href="@{/admin/listUsers/{pageNum}(pageNum=${currentPageNum - 1})}">上一页</a></span> |
+                    <span th:if="${page.hasNext()}"><a th:href="@{/admin/listUsers/{pageNum}(pageNum=${currentPageNum + 1})}">下一页</a></span>
+                </p>
+                <p>
+                    当前第 <span th:text="${page.getCurrent()}"></span> 页|
+                    共 <span th:text="${page.getPages()}"></span> 页 |
+                    共 <span th:text="${page.getTotal()}"></span> 位用户
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

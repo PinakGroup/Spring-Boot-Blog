@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>edit article</title>
+    <link rel="stylesheet" href="/static/editor/css/style.css">
+    <link rel="stylesheet" href="/static/editor/css/editormd.css">
+    <link rel="stylesheet" href="/static/css/article_edit.css">
+</head>
+<head th:insert="~{base :: header}">
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container">
+    <form th:action="@{/article/update/{articleId}(articleId=${article.articleId})}" method="post">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <label for="title">
+                    <input class="form-control" type="text" name="title" id="title" maxlength="255"
+                           th:value="${article.title}">
+                </label>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="related-widget-wrapper">
+                    <label for="id_article_type">选择分类</label>
+                    <select name="categoryId" id="id_article_type" required>
+                        <option th:value="${article.category.categoryId}"
+                                th:text="${article.category.categoryName}"></option>
+                        <option th:each="category:${categories}" th:value="${category.categoryId}"
+                                th:text="${category.categoryName}"></option>
+                    </select>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTypeModal">添加
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12 col-sm-12">
+                <input class="form-control article-summary" type="text" name="summary" th:value="${article.summary}"
+                       title="文章简介" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div id="article-editormd" class="col-md-12 col-sm-12 col-lg-10">
+                <!-- 存放源文件用于编辑 -->
+                <label for="textContent"></label>
+                <textarea id="textContent" name="content" th:if="${article}" th:text="${article.content}"></textarea>
+                <!-- 第二个隐藏文本域，用来构造生成的HTML代码，方便表单POST提交，这里的name可以任意取，后台接受时以这个name键为准 -->
+                <label for="text"></label>
+                <textarea id="text" class="editormd-html-textarea" name="HtmlTextContent"></textarea>
+            </div>
+            <input type="hidden" name="articleId" th:value="${article.articleId}">
+            <input type="hidden" name="createdTime"
+                   th:value="${#dates.format(article.createdTime, 'yyyy-MM-dd HH:mm:ss')}">
+            <input type="hidden" name="author" th:value="${article.author}">
+            <input type="hidden" name="readNum" th:value="${article.readNum}">
+            <input type="hidden" name="likeNum" th:value="${article.likeNum}">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">保存</button>
+        </div>
+    </form>
+
+    <script type="text/javascript" src="/static/editor/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/editor/js/editormd.min.js"></script>
+    <script type="text/javascript">
+        let articleEditor;
+
+        $(function () {
+            editormd.emoji = {
+                path: "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
+                ext: ".png"
+            };
+
+            editormd.twemoji = {
+                path: "http://twemoji.maxcdn.com/72x72/",
+                ext: ".png"
+            };
+
+            articleEditor = editormd("article-editormd", {
+                width: "90%",
+                height: 640,
+                syncScrolling: "single",
+                path: "/static/editor/lib/",
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL: "/images/upload",
+                saveHTMLToTextarea: true,
+                emoji: true,
+                editorTheme: "pastel-on-dark",
+                previewTheme: "dark",
+            });
+
+        });
+    </script>
+</div>
+</body>
+</html>

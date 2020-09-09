@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>new article</title>
+    <link rel="stylesheet" href="/static/editor/css/style.css">
+    <link rel="stylesheet" href="/static/editor/css/editormd.css">
+    <link rel="stylesheet" href="/static/css/article_edit.css">
+</head>
+<head th:insert="~{base :: header}">
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container">
+
+    <form action="/article/post" method="post">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <label for="title">
+                    <input class="form-control" type="text" name="title" id="title" maxlength="255"
+                           placeholder="请输入文章标题" required>
+                </label>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="related-widget-wrapper">
+                    <label for="id_article_type">选择分类</label>
+                    <select name="categoryId" id="id_article_type" required>
+                        <option th:each="category:${categories}" th:value="${category.categoryId}"
+                                th:text="${category.categoryName}"></option>
+                    </select>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTypeModal">添加
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-12 col-sm-12">
+                <input class="form-control article-summary" type="text" name="summary" placeholder="请输入文章简介"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="article-editormd" class="col-md-12 col-sm-12 col-lg-10">
+                <!-- 存放源文件用于编辑 -->
+                <label for="textContent"></label>
+                <textarea style="display:none;" id="textContent" name="content" required></textarea>
+                <!-- 第二个隐藏文本域，用来构造生成的HTML代码，方便表单POST提交，这里的name可以任意取，后台接受时以这个name键为准 -->
+                <label for="text"></label>
+                <textarea id="text" class="editormd-html-textarea" name="textContent"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">保存</button>
+        </div>
+    </form>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="addTypeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">添加分类</h4>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm" action="/category/add" method="post">
+                    <input class="form-control" type="text" name="categoryName" id="categoryName" placeholder="请输入分类名称" required>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/static/editor/js/editormd.min.js"></script>
+<script type="text/javascript">
+    let articleEditor;
+    $(function () {
+        editormd.emoji = {
+            path: "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
+            ext: ".png"
+        };
+
+        editormd.twemoji = {
+            path: "http://twemoji.maxcdn.com/72x72/",
+            ext: ".png"
+        };
+
+        articleEditor = editormd("article-editormd", {
+            width: "90%",
+            height: 580,
+            syncScrolling: "single",
+            path: "/static/editor/lib/",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "/images/upload",
+            saveHTMLToTextarea: true,
+            emoji: true,
+            theme: "dark",
+            editorTheme: "pastel-on-dark",
+            previewTheme: "dark",
+        });
+
+    });
+
+    $("#addCategoryForm").submit(function (event) {
+        event.preventDefault();
+        const newType = $("#categoryName").val();
+        $.ajax({
+            url: "/category/add",
+            method: "POST",
+            data: $(this).serialize(),
+            success: function (data) {
+                console.log(data);
+                if (data['success'] === true) {
+                    const cid = data['cid'];
+                    // $("#newOption").val(cid);
+                    // $("#newOption").text(newOption);
+                    $("#id_article_type").prepend('<option value=' + cid + '>' + newType + '</option>');
+                    //关闭模态框
+                    $("#addTypeModal").modal('hide');
+                } else {
+                    alert("添加失败，请稍后重试！");
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+        })
+    });
+</script>
+
+</body>
+</html>

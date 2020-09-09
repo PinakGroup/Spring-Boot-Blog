@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.li.blog.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.li.blog.beans.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <resultMap id="UserWithArticlesMap" type="com.li.blog.beans.User">
+        <id property="id" column="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="created_time" property="createdTime"/>
+        <!--一对多关联查询-->
+        <collection property="articles" ofType="com.li.blog.beans.Article">
+            <id property="articleId" column="article_id"/>
+            <result property="author" column="author"/>
+            <result property="title" column="title"/>
+            <result property="content" column="content"/>
+            <result property="createdTime" column="created_time"/>
+            <result property="lastUpdate" column="last_update"/>
+            <result property="readNum" column="read_num"/>
+            <result property="likeNum" column="like_num"/>
+            <result property="version" column="version"/>
+            <result property="logicFlag" column="logic_flag"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByUsername" resultType="com.li.blog.beans.User">
+        select
+            id,
+            username,
+            password,
+            email
+        from tbl_user
+        where username = #{username}
+    </select>
+    <!--作者与其全部文章-->
+    <select id="selectUserWithArticles" resultMap="UserWithArticlesMap">
+        select
+            u.id,
+            u.username,
+            u.password,
+            u.email,
+            u.created_time,
+            a.article_id,
+            a.author,
+            a.title,
+            a.content,
+            a.created_time,
+            a.last_update,
+            a.read_num,
+            a.like_num,
+            a.version,
+            a.logic_flag
+        from tbl_user u
+            left join tbl_article a on u.username = a.author
+        where u.username = #{username}
+    </select>
+
+</mapper>

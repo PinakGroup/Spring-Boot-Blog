@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:insert="~{base :: header}">
+</head>
+<head>
+    <title>list article</title>
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container panel-default col-md-6 col-md-offset-3">
+    <div class="panel-default">
+        <div class="panel-header">
+            <h2 style="text-align: center">文章列表</h2>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group" th:if="${page}">
+                <li class="list-group-item" th:each="article : ${page.getRecords()}">
+                    <div class="article">
+                        <h3><a target="_blank" th:href="@{/article/{articleId}(articleId=${article.articleId})}" th:text="${article.title}" style="color: blue"></a></h3>
+                        <p id="authorInfo">
+                            <span class="glyphicon glyphicon-user" th:text="${article.author}"></span>
+                            <span class="glyphicon glyphicon-eye-open" th:text="${article.readNum}"></span>
+                            <span class="glyphicon glyphicon-heart inactive" th:text="${article.likeNum}"></span>
+                            <a sec:authorize="isAuthenticated()" th:if="${loginUser != null && article.author == loginUser.name}" th:href="@{/article/edit/{articleId}(articleId=${article.articleId})}">编辑</a>
+                        </p>
+                        <p class="article-content-brief">
+                            <span th:text="${article.summary}"></span>
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="page-nav" th:if="${page}">
+        <!--分页组件-->
+        <nav style="text-align: center" aria-label="Page navigation">
+            <ul class="pagination">
+
+                <!--有上一页-->
+                <li th:if="${page.hasPrevious()}">
+                    <a th:href="@{/article/list/{pageNum}(pageNum=${currentPage - 1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <!--无上一页-->
+                <li th:if="${!page.hasPrevious()}">
+                    <a aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li th:each="pageNum: ${pageRange}">
+                    <a th:href="@{/article/list/{pageNum}(pageNum=${pageNum})}">
+                        <span th:class="${pageNum == currentPage ? 'active':''}" th:text="${pageNum}"></span>
+                    </a>
+                </li>
+
+                <li th:if="${page.hasNext()}">
+                    <a th:href="@{/article/list/{pageNum}(pageNum=${currentPage + 1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li th:if="${!page.hasNext()}">
+                    <a aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+</body>
+</html>

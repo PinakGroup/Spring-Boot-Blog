@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="header">
+
+<!--
+    <script src="/webjars/jquery/3.3.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.css">
+-->
+
+     <!-- Bootstrap -->
+     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <script src="/static/js/base.js"></script>
+    <meta charset="UTF-8">
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-default" style="background-color: blanchedalmond">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" id="site-name" href="/index">浑蛋LiZL</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="home-li">
+                    <a href="/index" id="home">
+                        <span class="glyphicon glyphicon-home">首页</span>
+                    </a>
+                </li>
+                <li class="articles-li">
+                    <a href="/article/list/1" id="articles">
+                        <span class="glyphicon glyphicon-book">文章</span>
+                    </a>
+                </li>
+                <li id="more" class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">
+                        <span class="glyphicon glyphicon-list">更多</span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/category/list">分类</a></li>
+                        <li><a href="#">标签</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">关于</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form action="/search/" class="navbar-form navbar-left" method="get">
+                <div id="search-q" class="form-group">
+                    <input type="text" class="form-control" name="q" id="q" placeholder="Search">
+                    <input type="hidden" name="page" id="page" value="1">
+                </div>
+                <button id="search-button" type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+
+                <li><a href="/article/new"><span><button class="btn btn-primary navbar-btn"
+                                                         id="write-article-btn">写文章</button></span></a></li>
+                <li sec:authorize="isAnonymous()"><a class="auth" href="/auth/login">
+                    <button class="btn btn-info navbar-btn">登录</button>
+                </a></li>
+                <li sec:authorize="isAnonymous()"><a class="auth" href="/auth/register">
+                    <button class="btn btn-danger navbar-btn">注册</button>
+                </a></li>
+
+                <li sec:authorize="isAuthenticated()"><a id="username" sec:authentication="name"></a></li>
+
+                <li class="dropdown" sec:authorize="isAuthenticated()">
+                    <a id="menu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false">Menu <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/user/}">个人中心</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li sec:authorize="isAuthenticated()"><a href="/logout">注销</a></li>
+                        <li sec:authorize="hasAuthority('admin')"><a href="/admin">后台管理</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+</body>
+</html>

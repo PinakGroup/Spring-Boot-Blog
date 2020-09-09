@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:insert="~{base :: header}">
+</head>
+<head>
+    <title>index</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+
+<div class="container">
+    <div class="row col-md-offset-1 col-lg-offset-1">
+        <div class="blog-content-container col-sm-6 col-md-6 col-lg-6">
+            <div th:if="${page}">
+                <ul id="newest-articles" th:each="article : ${page.getRecords()}">
+                    <li class="article">
+                        <div class="article">
+                            <h3>
+                                <a target="_blank" th:href="@{/article/{articleId}(articleId=${article.articleId})}"
+                                   th:text="${article.title}" style="color: black">
+                                </a>
+                            </h3>
+                            <p class="content-brief" th:text="${article.summary}"></p>
+                            <div id="article-info">
+                                <span class="glyphicon glyphicon-user" th:text="${article.author}"></span>
+                                <span class="glyphicon glyphicon-eye-open" th:text="${article.readNum}"></span>
+                                <span class="glyphicon glyphicon-heart inactive" th:text="${article.likeNum}"></span>
+                            </div>
+                        </div>
+                </ul>
+            </div>
+            <a href="/article/list/2">查看更多</a>
+        </div>
+
+        <div class="col-sm-6 col-md-4 col-lg-4">
+            <div id="recommend-articles">
+                <a href="/article/hot7/1" target="_blank"><img class="common" src="/static/img/7days.png"></a>
+                <a href="/article/hot30/1" target="_blank"><img class="common" src="/static/img/30days.png"></a>
+                <a href="#" target="_blank"><img class="common" src="/static/img/series.png"></a>
+            </div>
+            <hr>
+            <div id="recommend-types">
+                <h4>热门分类</h4>
+                <a th:each="category: ${categories}" th:href="@{/category/{id}/1(id=${category.categoryId})}">
+                    <button class="btn btn-default" th:text="${category.categoryName}"></button>
+                </a>
+                <a class="more-hot-types" href="/category/list">
+                    <button class="btn btn-info">更多分类></button>
+                </a>
+            </div>
+            <hr>
+            <div id="recommend-resources">
+                <h4>学习资源</h4>
+                <h5>系列教程</h5>
+                <div id="recommend-tutorial">
+                    <a href="http://www.gulixueyuan.com/path/java" target="_blank">Java后端开发系列</a> <br>
+                    <a href="http://www.gulixueyuan.com/path/front" target="_blank">前段开发学习路线</a> <br>
+                    <a href="http://www.gulixueyuan.com/path/java" target="_blank">Android开发系列</a> <br>
+                    <a href="#">更多...</a>
+                </div>
+                <br>
+                <h5>文档资料</h5>
+                <div id="recommend-docs">
+                    <a href="https://spring.io/" target="_blank"><img class="resources" id="spring.io"
+                                                                      src="/static/img/spring-by-pivotal.png"></a>
+                    <a href="http://www.mybatis.org/mybatis-3/zh/index.html" target="_blank"><img class="resources"
+                                                                                                  id="mybatis"
+                                                                                                  src="/static/img/mybatis-logo.png"></a><br>
+                    <a href="#">更多...</a>
+                </div>
+                <br>
+                <h5>实用工具</h5>
+                <div id="recommend-tools">
+                    <a href="https://www.eclipse.org/downloads/" target="_blank">eclipse</a><br>
+                    <a href="https://typora.io/" target="_blank">typora</a><br>
+                    <a href="https://www.jetbrains.com/idea/?fromMenu" target="_blank">IntelliJ IDEA</a><br>
+                    <a href="https://www.jetbrains.com/pycharm/?fromMenu" target="_blank">PyCharm</a><br>
+                    <a href="#">更多...</a>
+                </div>
+            </div>
+            <hr>
+            <div id="friend-href">
+                <h4>友情连接</h4>
+                <a href="http://www.gulixueyuan.com/" target="_blank"><img class="resources" src="/static/img/gulixueyuan.png" alt="谷粒学院"></a><br>
+                <a href="https://www.aliyun.com" target="_blank"><img class="resources" src="/static/img/aliyun.png" alt="阿里云"></a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

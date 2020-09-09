@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.li.blog.mapper.ArticleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.li.blog.beans.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="content" property="content"/>
+        <result column="author" property="author"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="last_update" property="lastUpdate"/>
+        <result column="read_num" property="readNum"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="category_id" property="categoryId"/>
+        <association property="category" javaType="com.li.blog.beans.Category">
+            <id column="category_id" property="categoryId"/>
+            <result column="category_name" property="categoryName"/>
+        </association>
+    </resultMap>
+    <select id="selectArticleWithCategory" resultMap="BaseResultMap">
+        select
+            a.article_id,
+            a.title,
+            a.summary,
+            a.content,
+            a.author,
+            a.created_time,
+            a.last_update,
+            a.read_num,
+            a.like_num,
+            tc.category_id,
+            tc.category_name
+        from tbl_article a
+            left join tbl_category tc on a.category_id = tc.category_id
+        where a.article_id = #{id}
+    </select>
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="WithCommentsResultMap" type="com.li.blog.beans.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="content" property="content"/>
+        <result column="author" property="author"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="last_update" property="lastUpdate"/>
+        <result column="read_num" property="readNum"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="category_id" property="categoryId"/>
+        <association property="category" javaType="com.li.blog.beans.Category">
+            <id column="category_id" property="categoryId"/>
+            <result column="category_name" property="categoryName"/>
+        </association>
+        <collection property="comments" ofType="com.li.blog.beans.Comment">
+            <id column="comment_id" property="commentId"/>
+            <result column="comment_content" property="commentContent"/>
+            <result column="username" property="username"/>
+            <result column="parent_id" property="parentId"/>
+            <result column="comment_time" property="commentTime"/>
+            <result column="last_update" property="lastUpdate"/>
+            <result column="comment_article_id" property="articleId"/>
+        </collection>
+    </resultMap>
+    <select id="selectArticleWithComments" resultMap="WithCommentsResultMap">
+        select
+            a.article_id,
+            a.title,
+            a.summary,
+            a.content,
+            a.author,
+            a.created_time,
+            a.last_update,
+            a.read_num,
+            a.like_num,
+            tc.category_id,
+            tc.category_name,
+            tc2.comment_id,
+            tc2.username,
+            tc2.comment_content,
+            tc2.comment_time,
+            tc2.last_update,
+            tc2.article_id as comment_article_id,
+            tc2.parent_id
+        from tbl_article a
+            left join tbl_category tc on a.category_id = tc.category_id
+            left join tbl_comment tc2 on tc2.article_id = a.article_id
+        where a.article_id = #{id}
+    </select>
+
+</mapper>

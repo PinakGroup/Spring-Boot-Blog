@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:insert="~{base :: header}">
+</head>
+<head>
+    <title>list article</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+<nav th:insert="~{base :: navbar}">
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 col-lg-2">
+            <div th:if="${categoryPage}">
+                <ul class="nav nav-stacked" th:each="category:${categoryPage.getRecords()}">
+                    <li role="presentation">
+                        <a th:href="@{/category/{categoryId}/{pageNum}(categoryId=${category.categoryId}, pageNum=1)}" th:text="${category.categoryName}"></a>
+                    </li>
+                </ul>
+            </div>
+
+            <ul class="nav nav-stacked" th:if="${category}">
+                <li role="presentation">
+                    <a href="#" th:text="${category.categoryName}"></a>
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="col-md-9 col-lg-10" th:if="${articlePage}">
+            <div>
+                <ul id="newest-articles" th:each="article : ${articlePage.getRecords()}">
+                    <li class="article">
+                        <div class="article">
+                            <h3>
+                                <a target="_blank" th:href="@{/article/{articleId}(articleId=${article.articleId})}"
+                                   th:text="${article.title}" style="color: #00a8c6">
+                                </a>
+                            </h3>
+                            <p class="content-brief" th:text="${article.summary}"></p>
+                            <div id="article-info">
+                                <span class="glyphicon glyphicon-user" th:text="${article.author}"></span>
+                                <span class="glyphicon glyphicon-eye-open" th:text="${article.readNum}"></span>
+                                <span class="glyphicon glyphicon-heart inactive" th:text="${article.likeNum}"></span>
+                            </div>
+                        </div>
+                </ul>
+                <h3 th:if="${articlePage.getRecords().size() == 0}" style="text-align: center">
+                    暂无博客...
+                </h3>
+            </div>
+            <div class="page-nav" th:if="${articlePage}">
+                <!--分页组件-->
+                <nav style="text-align: center" aria-label="Page navigation">
+                    <ul class="pagination">
+
+                        <!--有上一页-->
+                        <li th:if="${articlePage.hasPrevious()}">
+                            <a th:href="@{/category/{categoryId}/{pageNum}(categoryId=${category.categoryId},pageNum=${currentPage - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!--无上一页-->
+                        <li th:if="${!articlePage.hasPrevious()}">
+                            <a aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        <li th:each="pageNum: ${pageRange}">
+                            <a th:href="@{/category/{categoryId}/{pageNum}(categoryId=${category.categoryId},pageNum=${pageNum})}">
+                                <span th:class="${pageNum == currentPage ? 'active':''}" th:text="${pageNum}"></span>
+                            </a>
+                        </li>
+
+                        <li th:if="${articlePage.hasNext()}">
+                            <a th:href="@{/category/{categoryId}/{pageNum}(categoryId=${category.categoryId},pageNum=${currentPage + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li th:if="${!articlePage.hasNext()}">
+                            <a aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

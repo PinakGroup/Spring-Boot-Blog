@@ -1,0 +1,15 @@
+ul#articles{
+    list-style-type: none;
+}
+
+ul#articles li {
+    margin-top: 0.5em;
+}
+
+ul#article-info span{
+    font-size: 14px;
+}
+
+span.glyphicon-heart{
+    color: #9d1e15;
+}
